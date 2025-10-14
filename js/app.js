@@ -3,7 +3,6 @@ import { ProgressBar } from './ui/progress-bar.js';
 import { ResultsRenderer } from './ui/results-renderer.js';
 import { ThemeManager } from './ui/theme-manager.js';
 import { StorageManager } from './data/storage.js';
-import { Helpers } from './utils/helpers.js';
 
 class TradingPsychologyApp {
     constructor() {
@@ -11,6 +10,7 @@ class TradingPsychologyApp {
         this.assessmentEngine = null;
         this.progressBar = null;
         this.themeManager = null;
+        this.currentResults = null;
         
         this.initializeApp();
     }
@@ -38,6 +38,7 @@ class TradingPsychologyApp {
         this.retakeButton = document.getElementById('retake-btn');
         this.detailedReportButton = document.getElementById('detailed-report-btn');
         this.saveResultsButton = document.getElementById('save-results-btn');
+        this.backToWelcomeButton = document.getElementById('back-to-welcome');
 
         // Containers
         this.questionContainer = document.getElementById('question-container');
@@ -76,8 +77,9 @@ class TradingPsychologyApp {
         this.retakeButton.addEventListener('click', () => this.retakeAssessment());
         this.detailedReportButton.addEventListener('click', () => this.showDetailedReport());
         this.saveResultsButton.addEventListener('click', () => this.saveResults());
+        this.backToWelcomeButton.addEventListener('click', () => this.showScreen('welcome'));
 
-        // Navigation (you can add more navigation buttons)
+        // Navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.currentScreen === 'assessment') {
                 this.showScreen('welcome');
@@ -168,7 +170,6 @@ class TradingPsychologyApp {
     }
 
     onAssessmentProgress(currentIndex, answers) {
-        // You can add additional progress tracking here
         console.log(`Progress: ${currentIndex + 1}/${answers.length}`);
     }
 
@@ -185,7 +186,6 @@ class TradingPsychologyApp {
     }
 
     calculateScore(questions, answers) {
-        // This would use the ScoringEngine in a real implementation
         let totalScore = 0;
         let maxScore = 0;
 
@@ -221,7 +221,6 @@ class TradingPsychologyApp {
     }
 
     showDetailedReport() {
-        // Implement detailed report functionality
         alert('Detailed report feature coming soon!');
     }
 
