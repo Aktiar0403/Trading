@@ -6,6 +6,7 @@
     <title>Trading Psychology Assessment</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div id="app">
@@ -31,7 +32,11 @@
                     <div class="card welcome-card">
                         <h2>Welcome to Your Trading Psychology Assessment</h2>
                         <p>Trading success depends not only on strategy and analysis but also on psychological factors. This assessment will help you identify strengths and areas for improvement in your trading psychology.</p>
-                        
+                        <div class="assessment-type-card">
+    <h3>Live Psychology Analytics</h3>
+    <p>Real-time mindset monitoring during trading sessions</p>
+    <button class="btn-primary" onclick="app.showAnalytics()">Start Live Monitoring</button>
+</div>
                         <div class="assessment-types">
                             <div class="assessment-type-card">
                                 <h3>Full Assessment</h3>
@@ -136,5 +141,53 @@
     <script type="module" src="js/ui/theme-manager.js"></script>
     <script type="module" src="js/assessment/assessment-engine.js"></script>
     <script type="module" src="js/app.js"></script>
+
+    <!-- Analytics Screen -->
+<section id="analytics-screen" class="screen">
+    <div class="card analytics-card">
+        <div class="analytics-header">
+            <h2>Live Trading Psychology Analytics</h2>
+            <div class="monitor-controls">
+                <button id="start-monitor-btn" class="btn-success">Start Monitoring</button>
+                <button id="stop-monitor-btn" class="btn-secondary" disabled>Stop Monitoring</button>
+                <button id="add-trade-btn" class="btn-primary">Record Trade</button>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-row">
+                <div class="chart-wrapper">
+                    <canvas id="mindset-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="radar-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-row">
+                <div class="chart-wrapper">
+                    <canvas id="breakdown-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="correlation-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="psychology-alerts">
+            <h3>Psychology Alerts</h3>
+            <div id="alerts-container"></div>
+        </div>
+
+        <div class="session-info">
+            <h3>Current Session</h3>
+            <div id="session-metrics"></div>
+        </div>
+
+        <div class="analytics-actions">
+            <button id="back-from-analytics" class="btn-secondary">Back to Home</button>
+            <button id="view-session-history" class="btn-primary">View Session History</button>
+        </div>
+    </div>
+</section>
 </body>
 </html>
