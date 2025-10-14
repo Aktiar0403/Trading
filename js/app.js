@@ -5,32 +5,37 @@ import { ThemeManager } from './ui/theme-manager.js';
 import { StorageManager } from './data/storage.js';
 import { LiveTradingMonitor } from './trading/live-monitor.js';
 import { ChartManager } from './ui/chart-manager.js';
-
 class TradingPsychologyApp {
-    constructor() {
-        this.currentScreen = 'welcome';
-        this.assessmentEngine = null;
-        this.progressBar = null;
-        this.themeManager = null;
-        this.liveMonitor = null;
-        this.chartManager = null;
-        this.currentResults = null;
-        this.metricsInterval = null;
-        
-        this.initializeApp();
-    }
+ constructor() {
+    this.currentScreen = 'welcome';
+    this.assessmentEngine = null;
+    this.progressBar = null;
+    this.themeManager = null;
+    this.liveMonitor = null;
+    this.chartManager = null;
+    this.currentResults = null;
+    this.metricsInterval = null;
+    
+    // Bind methods to maintain 'this' context
+    this.showAnalytics = this.showAnalytics.bind(this);
+    this.startPsychologyMonitoring = this.startPsychologyMonitoring.bind(this);
+    this.stopPsychologyMonitoring = this.stopPsychologyMonitoring.bind(this);
+    this.showTradeModal = this.showTradeModal.bind(this);
+    
+    this.initializeApp();
+}
 
     initializeApp() {
-        try {
-            this.cacheDomElements();
-            this.initializeManagers();
-            this.initializeAnalytics();
-            this.bindEventListeners();
-            this.showScreen('welcome');
-        } catch (error) {
-            console.error('Error initializing app:', error);
-        }
+    try {
+        this.cacheDomElements();
+        this.initializeManagers();
+        this.initializeAnalytics();
+        this.bindEventListeners();
+        this.showScreen('welcome');
+    } catch (error) {
+        console.error('Error initializing app:', error);
     }
+}
 
     cacheDomElements() {
         // Screens
@@ -74,6 +79,7 @@ class TradingPsychologyApp {
         this.viewSessionHistoryBtn = document.getElementById('view-session-history');
         this.alertsContainer = document.getElementById('alerts-container');
         this.sessionMetrics = document.getElementById('session-metrics');
+          this.screens.analytics = document.getElementById('analytics-screen');
 
         // Validate required elements
         if (!this.progressFill || !this.progressText) {
@@ -169,6 +175,31 @@ class TradingPsychologyApp {
         if (this.viewSessionHistoryBtn) {
             this.viewSessionHistoryBtn.addEventListener('click', () => this.showSessionHistory());
         }
+        // Analytics Screen Events
+if (this.startMonitorBtn) {
+    this.startMonitorBtn.addEventListener('click', this.startPsychologyMonitoring);
+}
+
+if (this.stopMonitorBtn) {
+    this.stopMonitorBtn.addEventListener('click', this.stopPsychologyMonitoring);
+}
+
+if (this.addTradeBtn) {
+    this.addTradeBtn.addEventListener('click', this.showTradeModal);
+}
+
+if (this.backFromAnalyticsBtn) {
+    this.backFromAnalyticsBtn.addEventListener('click', () => this.showScreen('welcome'));
+}
+
+if (this.viewSessionHistoryBtn) {
+    this.viewSessionHistoryBtn.addEventListener('click', () => this.showSessionHistory());
+}
+
+// Psychology Alert Events
+document.addEventListener('psychologyAlert', (e) => {
+    this.handlePsychologyAlert(e.detail);
+});
 
         // Psychology Alert Events
         document.addEventListener('psychologyAlert', (e) => {
@@ -384,10 +415,10 @@ class TradingPsychologyApp {
     }
 
     showDetailedReport() {
-        // Enhanced detailed report with charts
-        this.showScreen('analytics');
-        this.startPsychologyMonitoring();
-    }
+    // Enhanced detailed report with charts
+    this.showScreen('analytics');
+    this.startPsychologyMonitoring();
+}
 
     saveResults() {
         if (this.currentResults) {
@@ -400,7 +431,196 @@ class TradingPsychologyApp {
             }
         }
     }
+// Analytics Methods
+showAnalytics() {
+    this.showScreen('analytics');
+}
 
+startPsychologyMonitoring() {
+    if (!this.liveMonitor) return;
+
+    try {
+        this.liveMonitor.startMonitoring();
+        this.startMonitorBtn.disabled = true;
+        this.stopMonitorBtn.disabled = false;
+        this.addTradeBtn.disabled = false;
+
+        // Initialize charts
+        this.initializeCharts();
+
+        // Start updating session metrics
+        this.startMetricsUpdate();
+
+        this.showSuccess('Psychology monitoring started successfully!');
+    } catch (error) {
+        console.error('Error starting psychology monitoring:', error);
+        this.showError('Error starting psychology monitoring.');
+    }
+}
+
+stopPsychologyMonitoring() {
+    if (!this.liveMonitor) return;
+
+    try {
+        this.liveMonitor.stopMonitoring();
+        this.startMonitorBtn.disabled = false;
+        this.stopMonitorBtn.disabled = true;
+        this.addTradeBtn.disabled = true;
+
+        // Stop metrics update
+        this.stopMetricsUpdate();
+
+        // Generate and show session report
+        const report = this.liveMonitor.generateSessionReport();
+        this.showSessionReport(report);
+
+        this.showSuccess('Psychology monitoring stopped. Session report generated.');
+    } catch (error) {
+        console.error('Error stopping psychology monitoring:', error);
+        this.showError('Error stopping psychology monitoring.');
+    }
+}
+
+initializeCharts() {
+    if (!this.chartManager) return;
+
+    try {
+        this.chartManager.createMindsetChart('mindset-chart');
+        this.chartManager.createEmotionRadarChart('radar-chart');
+        this.chartManager.createPsychologyBreakdownChart('breakdown-chart');
+        this.chartManager.createPerformanceCorrelationChart('correlation-chart');
+    } catch (error) {
+        console.error('Error initializing charts:', error);
+    }
+}
+
+startMetricsUpdate() {
+    this.metricsInterval = setInterval(() => {
+        this.updateSessionMetrics();
+    }, 2000);
+}
+
+stopMetricsUpdate() {
+    if (this.metricsInterval) {
+        clearInterval(this.metricsInterval);
+        this.metricsInterval = null;
+    }
+}
+
+updateSessionMetrics() {
+    if (!this.liveMonitor || !this.liveMonitor.isMonitoring || !this.sessionMetrics) return;
+
+    const currentData = this.liveMonitor.getCurrentPsychologySnapshot();
+    if (!currentData) return;
+
+    this.sessionMetrics.innerHTML = `
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">${Math.round(currentData.confidence)}%</div>
+                <div class="metric-label">Confidence</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">${Math.round(currentData.stressLevel)}%</div>
+                <div class="metric-label">Stress Level</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">${Math.round(currentData.focusLevel)}%</div>
+                <div class="metric-label">Focus Level</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">${this.capitalizeFirstLetter(currentData.emotionalState)}</div>
+                <div class="metric-label">Emotional State</div>
+            </div>
+        </div>
+    `;
+}
+
+handlePsychologyAlert(alert) {
+    if (!this.alertsContainer) return;
+
+    const alertClass = `alert-${alert.level}`;
+    const alertElement = document.createElement('div');
+    alertElement.className = `alert-item ${alertClass}`;
+    alertElement.innerHTML = `
+        <strong>${alert.type.toUpperCase()} ALERT</strong>
+        <p>${alert.message}</p>
+        <small>${this.capitalizeFirstLetter(alert.metric)}: ${alert.value}% - ${new Date().toLocaleTimeString()}</small>
+    `;
+
+    this.alertsContainer.insertBefore(alertElement, this.alertsContainer.firstChild);
+
+    // Auto-remove alert after 15 seconds
+    setTimeout(() => {
+        if (alertElement.parentNode) {
+            alertElement.remove();
+        }
+    }, 15000);
+}
+
+showTradeModal() {
+    if (!this.liveMonitor || !this.liveMonitor.isMonitoring) {
+        this.showError('Please start monitoring first.');
+        return;
+    }
+
+    // Simple trade recording
+    const tradeType = prompt('Trade Type (buy/sell):');
+    const outcome = prompt('Trade Outcome (win/loss):');
+    const notes = prompt('Trade Notes:');
+
+    if (tradeType && outcome) {
+        this.liveMonitor.recordTrade({
+            type: tradeType,
+            outcome: outcome,
+            notes: notes,
+            id: Date.now().toString()
+        });
+        this.showSuccess(`Trade recorded: ${tradeType} - ${outcome}`);
+    }
+}
+
+showSessionHistory() {
+    const sessions = this.liveMonitor.getSessionHistory();
+    alert(`You have ${sessions.length} trading sessions recorded.`);
+}
+
+showSessionReport(report) {
+    let reportHtml = `
+        <div class="session-report">
+            <h3>Trading Session Report</h3>
+            <p><strong>Duration:</strong> ${this.calculateSessionDuration(report.session.startTime, new Date())}</p>
+            <p><strong>Total Trades:</strong> ${report.session.trades.length}</p>
+            <p><strong>Average Confidence:</strong> ${Math.round(report.summary.averageConfidence)}%</p>
+            <p><strong>Average Stress:</strong> ${Math.round(report.summary.averageStress)}%</p>
+            
+            <h4>Recommendations</h4>
+            ${report.recommendations.map(rec => `
+                <div class="recommendation-item">
+                    <strong>${rec.type.replace('_', ' ').toUpperCase()}</strong>
+                    <p>${rec.message}</p>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    this.showModal('Session Report', reportHtml);
+}
+
+// Utility Methods
+calculateSessionDuration(startTime, endTime) {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const duration = end - start;
+    
+    const hours = Math.floor(duration / (1000 * 60 * 60));
+    const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return `${hours}h ${minutes}m`;
+}
+
+capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
     // Analytics Methods
     startPsychologyMonitoring() {
         if (!this.liveMonitor) return;
@@ -783,7 +1003,12 @@ class TradingPsychologyApp {
             this.screens[screenName].classList.add('active');
             this.currentScreen = screenName;
         }
-
+if (screenName === 'dashboard') {
+        this.loadAssessmentHistory();
+    } else if (screenName === 'analytics') {
+        this.alertsContainer.innerHTML = '';
+        this.sessionMetrics.innerHTML = '<p>Start monitoring to see live metrics...</p>';
+    }
         // Screen-specific initialization
         if (screenName === 'dashboard') {
             this.loadAssessmentHistory();
@@ -794,6 +1019,7 @@ class TradingPsychologyApp {
 
         // Update document title
         document.title = this.getScreenTitle(screenName) + ' - Trading Psychology Assessment';
+
     }
 
     showAnalytics() {
