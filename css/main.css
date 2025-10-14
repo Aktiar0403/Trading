@@ -389,3 +389,12 @@ body {
         font-size: 3rem;
     }
 }
+/* Ensure smooth transitions for theme switching */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Specific transitions for elements that change with theme */
+.card, .option, .btn, .app-header {
+    transition: all 0.3s ease;
+}

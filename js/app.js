@@ -16,10 +16,14 @@ class TradingPsychologyApp {
     }
 
     initializeApp() {
-        this.cacheDomElements();
-        this.initializeManagers();
-        this.bindEventListeners();
-        this.showScreen('welcome');
+        try {
+            this.cacheDomElements();
+            this.initializeManagers();
+            this.bindEventListeners();
+            this.showScreen('welcome');
+        } catch (error) {
+            console.error('Error initializing app:', error);
+        }
     }
 
     cacheDomElements() {
@@ -39,6 +43,8 @@ class TradingPsychologyApp {
         this.detailedReportButton = document.getElementById('detailed-report-btn');
         this.saveResultsButton = document.getElementById('save-results-btn');
         this.backToWelcomeButton = document.getElementById('back-to-welcome');
+        this.viewHistoryButton = document.getElementById('view-history-btn');
+        this.backToHomeButton = document.getElementById('back-to-home-btn');
 
         // Containers
         this.questionContainer = document.getElementById('question-container');
@@ -49,15 +55,26 @@ class TradingPsychologyApp {
         // Progress elements
         this.progressFill = document.getElementById('progress-fill');
         this.progressText = document.getElementById('progress-text');
+
+        // Validate required elements
+        if (!this.progressFill || !this.progressText) {
+            console.warn('Progress bar elements not found');
+        }
     }
 
     initializeManagers() {
-        // Initialize theme manager
-        this.themeManager = new ThemeManager();
-        this.themeManager.init();
+        try {
+            // Initialize theme manager
+            this.themeManager = new ThemeManager();
+            this.themeManager.init();
 
-        // Initialize progress bar
-        this.progressBar = new ProgressBar(this.progressFill, this.progressText);
+            // Initialize progress bar
+            if (this.progressFill && this.progressText) {
+                this.progressBar = new ProgressBar(this.progressFill, this.progressText);
+            }
+        } catch (error) {
+            console.error('Error initializing managers:', error);
+        }
     }
 
     bindEventListeners() {
@@ -70,16 +87,36 @@ class TradingPsychologyApp {
         });
 
         // Assessment navigation
-        this.prevButton.addEventListener('click', () => this.previousQuestion());
-        this.nextButton.addEventListener('click', () => this.nextQuestion());
+        if (this.prevButton) {
+            this.prevButton.addEventListener('click', () => this.previousQuestion());
+        }
+        if (this.nextButton) {
+            this.nextButton.addEventListener('click', () => this.nextQuestion());
+        }
 
         // Results actions
-        this.retakeButton.addEventListener('click', () => this.retakeAssessment());
-        this.detailedReportButton.addEventListener('click', () => this.showDetailedReport());
-        this.saveResultsButton.addEventListener('click', () => this.saveResults());
-        this.backToWelcomeButton.addEventListener('click', () => this.showScreen('welcome'));
+        if (this.retakeButton) {
+            this.retakeButton.addEventListener('click', () => this.retakeAssessment());
+        }
+        if (this.detailedReportButton) {
+            this.detailedReportButton.addEventListener('click', () => this.showDetailedReport());
+        }
+        if (this.saveResultsButton) {
+            this.saveResultsButton.addEventListener('click', () => this.saveResults());
+        }
 
-        // Navigation
+        // Navigation buttons
+        if (this.backToWelcomeButton) {
+            this.backToWelcomeButton.addEventListener('click', () => this.showScreen('welcome'));
+        }
+        if (this.viewHistoryButton) {
+            this.viewHistoryButton.addEventListener('click', () => this.showScreen('dashboard'));
+        }
+        if (this.backToHomeButton) {
+            this.backToHomeButton.addEventListener('click', () => this.showScreen('welcome'));
+        }
+
+        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.currentScreen === 'assessment') {
                 this.showScreen('welcome');
@@ -88,21 +125,30 @@ class TradingPsychologyApp {
     }
 
     startAssessment(assessmentType) {
-        this.assessmentEngine = new AssessmentEngine(assessmentType);
-        this.assessmentEngine.setProgressBar(this.progressBar);
-        this.assessmentEngine.setCallbacks(
-            (index, answers) => this.onAssessmentProgress(index, answers),
-            (questions, answers, type) => this.onAssessmentComplete(questions, answers, type)
-        );
+        try {
+            this.assessmentEngine = new AssessmentEngine(assessmentType);
+            
+            if (this.progressBar) {
+                this.assessmentEngine.setProgressBar(this.progressBar);
+            }
+            
+            this.assessmentEngine.setCallbacks(
+                (index, answers) => this.onAssessmentProgress(index, answers),
+                (questions, answers, type) => this.onAssessmentComplete(questions, answers, type)
+            );
 
-        this.assessmentEngine.start();
-        this.showScreen('assessment');
-        this.renderCurrentQuestion();
-        this.updateNavigationButtons();
+            this.assessmentEngine.start();
+            this.showScreen('assessment');
+            this.renderCurrentQuestion();
+            this.updateNavigationButtons();
+        } catch (error) {
+            console.error('Error starting assessment:', error);
+            alert('Error starting assessment. Please try again.');
+        }
     }
 
     renderCurrentQuestion() {
-        if (!this.assessmentEngine) return;
+        if (!this.assessmentEngine || !this.questionContainer) return;
 
         const question = this.assessmentEngine.getCurrentQuestion();
         const currentAnswer = this.assessmentEngine.answers[this.assessmentEngine.currentQuestionIndex];
@@ -158,7 +204,7 @@ class TradingPsychologyApp {
     }
 
     updateNavigationButtons() {
-        if (!this.assessmentEngine) return;
+        if (!this.assessmentEngine || !this.prevButton || !this.nextButton) return;
 
         this.prevButton.disabled = !this.assessmentEngine.hasPrevious();
         
@@ -174,15 +220,20 @@ class TradingPsychologyApp {
     }
 
     onAssessmentComplete(questions, answers, assessmentType) {
-        const results = {
-            questions,
-            answers,
-            type: assessmentType,
-            score: this.calculateScore(questions, answers),
-            timestamp: new Date().toISOString()
-        };
+        try {
+            const results = {
+                questions,
+                answers,
+                type: assessmentType,
+                score: this.calculateScore(questions, answers),
+                timestamp: new Date().toISOString()
+            };
 
-        this.showResults(results);
+            this.showResults(results);
+        } catch (error) {
+            console.error('Error completing assessment:', error);
+            alert('Error calculating results. Please try again.');
+        }
     }
 
     calculateScore(questions, answers) {
@@ -202,14 +253,21 @@ class TradingPsychologyApp {
     }
 
     showResults(results) {
-        this.resultsContent.innerHTML = ResultsRenderer.renderResults(
-            results.questions,
-            results.answers,
-            results.type
-        );
+        if (!this.resultsContent) return;
 
-        this.currentResults = results;
-        this.showScreen('results');
+        try {
+            this.resultsContent.innerHTML = ResultsRenderer.renderResults(
+                results.questions,
+                results.answers,
+                results.type
+            );
+
+            this.currentResults = results;
+            this.showScreen('results');
+        } catch (error) {
+            console.error('Error showing results:', error);
+            alert('Error displaying results. Please try again.');
+        }
     }
 
     retakeAssessment() {
@@ -226,15 +284,22 @@ class TradingPsychologyApp {
 
     saveResults() {
         if (this.currentResults) {
-            const id = StorageManager.saveAssessmentResult(this.currentResults);
-            alert('Results saved successfully!');
+            try {
+                const id = StorageManager.saveAssessmentResult(this.currentResults);
+                alert('Results saved successfully!');
+            } catch (error) {
+                console.error('Error saving results:', error);
+                alert('Error saving results. Please try again.');
+            }
         }
     }
 
     showScreen(screenName) {
         // Hide all screens
         Object.values(this.screens).forEach(screen => {
-            screen.classList.remove('active');
+            if (screen) {
+                screen.classList.remove('active');
+            }
         });
 
         // Show target screen
@@ -250,23 +315,35 @@ class TradingPsychologyApp {
     }
 
     loadAssessmentHistory() {
-        const assessments = StorageManager.getAssessmentResults();
-        this.historyContainer.innerHTML = ResultsRenderer.renderHistory(assessments);
+        if (!this.historyContainer) return;
 
-        // Add event listeners to view details buttons
-        this.historyContainer.querySelectorAll('.view-details-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const assessmentId = e.target.dataset.id;
-                this.viewAssessmentDetails(assessmentId);
+        try {
+            const assessments = StorageManager.getAssessmentResults();
+            this.historyContainer.innerHTML = ResultsRenderer.renderHistory(assessments);
+
+            // Add event listeners to view details buttons
+            this.historyContainer.querySelectorAll('.view-details-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const assessmentId = e.target.dataset.id;
+                    this.viewAssessmentDetails(assessmentId);
+                });
             });
-        });
+        } catch (error) {
+            console.error('Error loading assessment history:', error);
+            this.historyContainer.innerHTML = '<p class="text-center">Error loading assessment history.</p>';
+        }
     }
 
     viewAssessmentDetails(assessmentId) {
-        const assessment = StorageManager.getAssessmentResult(assessmentId);
-        if (assessment) {
-            this.currentResults = assessment;
-            this.showResults(assessment);
+        try {
+            const assessment = StorageManager.getAssessmentResult(assessmentId);
+            if (assessment) {
+                this.currentResults = assessment;
+                this.showResults(assessment);
+            }
+        } catch (error) {
+            console.error('Error viewing assessment details:', error);
+            alert('Error loading assessment details.');
         }
     }
 }
