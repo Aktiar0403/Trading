@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Psychology Assessment</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/components/header.css">
+    <link rel="stylesheet" href="css/components/cards.css">
+    <link rel="stylesheet" href="css/components/buttons.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/themes/light.css" id="theme-stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header Component -->
+        <header class="app-header">
+            <div class="container">
+                <h1 class="app-title">Trading Psychology Assessment</h1>
+                <p class="app-subtitle">Evaluate your trading mindset and improve your performance</p>
+                <div class="theme-toggle">
+                    <button id="theme-toggle-btn" class="btn-secondary">
+                        <span class="theme-icon">🌙</span>
+                        Toggle Theme
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Welcome Screen -->
+                <section id="welcome-screen" class="screen active">
+                    <div class="card welcome-card">
+                        <h2>Welcome to Your Trading Psychology Assessment</h2>
+                        <p>Trading success depends not only on strategy and analysis but also on psychological factors. This assessment will help you identify strengths and areas for improvement in your trading psychology.</p>
+                        
+                        <div class="assessment-types">
+                            <div class="assessment-type-card">
+                                <h3>Full Assessment</h3>
+                                <p>Complete 20-question comprehensive evaluation</p>
+                                <button class="btn-primary" data-assessment-type="full">Start Full Assessment</button>
+                            </div>
+                            
+                            <div class="assessment-type-card">
+                                <h3>Quick Test</h3>
+                                <p>10-question focused evaluation</p>
+                                <button class="btn-primary" data-assessment-type="quick">Start Quick Test</button>
+                            </div>
+                            
+                            <div class="assessment-type-card">
+                                <h3>Risk Tolerance</h3>
+                                <p>Specialized risk assessment</p>
+                                <button class="btn-primary" data-assessment-type="risk">Start Risk Assessment</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Assessment Screen -->
+                <section id="assessment-screen" class="screen">
+                    <div class="card assessment-card">
+                        <div class="assessment-header">
+                            <h2 id="assessment-title">Trading Psychology Assessment</h2>
+                            <div class="assessment-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progress-fill"></div>
+                                </div>
+                                <span id="progress-text">Question 1 of 10</span>
+                            </div>
+                        </div>
+
+                        <div id="question-container" class="question-container">
+                            <!-- Questions will be rendered here -->
+                        </div>
+
+                        <div class="assessment-navigation">
+                            <button id="prev-btn" class="btn-secondary" disabled>
+                                <span class="nav-icon">←</span> Previous
+                            </button>
+                            <button id="next-btn" class="btn-primary">
+                                Next <span class="nav-icon">→</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Results Screen -->
+                <section id="results-screen" class="screen">
+                    <div class="card results-card">
+                        <div id="results-content">
+                            <!-- Results will be rendered here -->
+                        </div>
+                        
+                        <div class="results-actions">
+                            <button id="retake-btn" class="btn-secondary">Retake Assessment</button>
+                            <button id="detailed-report-btn" class="btn-primary">View Detailed Report</button>
+                            <button id="save-results-btn" class="btn-primary">Save Results</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Dashboard Screen -->
+                <section id="dashboard-screen" class="screen">
+                    <div class="card dashboard-card">
+                        <h2>Your Assessment History</h2>
+                        <div id="history-container">
+                            <!-- Assessment history will be rendered here -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="container">
+                <p>&copy; 2024 Trading Psychology Assessment Tool | For educational purposes</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script type="module" src="js/utils/constants.js"></script>
+    <script type="module" src="js/utils/helpers.js"></script>
+    <script type="module" src="js/data/storage.js"></script>
+    <script type="module" src="js/assessment/questions.js"></script>
+    <script type="module" src="js/assessment/scoring.js"></script>
+    <script type="module" src="js/ui/progress-bar.js"></script>
+    <script type="module" src="js/ui/results-renderer.js"></script>
+    <script type="module" src="js/ui/theme-manager.js"></script>
+    <script type="module" src="js/assessment/assessment-engine.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
