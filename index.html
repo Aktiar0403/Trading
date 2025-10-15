@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <!-- Add to head section -->
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
     <div id="app">
@@ -33,9 +35,9 @@
                         <h2>Welcome to Your Trading Psychology Assessment</h2>
                         <p>Trading success depends not only on strategy and analysis but also on psychological factors. This assessment will help you identify strengths and areas for improvement in your trading psychology.</p>
                         <div class="assessment-type-card">
-    <h3>Live Psychology Analytics</h3>
-    <p>Real-time mindset monitoring during trading sessions</p>
-    <button class="btn-primary" id="view-analytics-btn">Start Live Monitoring</button>
+    <h3>Live Trading</h3>
+    <p>Practice trading with real charts and simulated environment</p>
+    <button class="btn-primary" onclick="app.showTrading()">Start Trading</button>
 </div>
                         <div class="assessment-types">
                             <div class="assessment-type-card">
@@ -186,6 +188,59 @@
         <div class="analytics-actions">
             <button id="back-from-analytics" class="btn-secondary">Back to Home</button>
             <button id="view-session-history" class="btn-primary">View Session History</button>
+        </div>
+    </div>
+</section>
+<!-- Trading Screen -->
+<section id="trading-screen" class="screen">
+    <div class="card trading-card">
+        <div class="trading-header">
+            <h2>Live Trading Interface</h2>
+            <div class="trading-controls">
+                <select id="symbol-select" class="form-control">
+                    <option value="BTC/USD">BTC/USD</option>
+                    <option value="ETH/USD">ETH/USD</option>
+                    <option value="AAPL">AAPL</option>
+                    <option value="SPY">SPY</option>
+                </select>
+                <select id="timeframe-select" class="form-control">
+                    <option value="1m">1 Minute</option>
+                    <option value="5m">5 Minutes</option>
+                    <option value="15m">15 Minutes</option>
+                    <option value="1h" selected>1 Hour</option>
+                    <option value="4h">4 Hours</option>
+                    <option value="1d">1 Day</option>
+                </select>
+                <button id="buy-button" class="btn-success">Buy</button>
+                <button id="sell-button" class="btn-error">Sell</button>
+                <input type="number" id="quantity-input" class="form-control" value="0.1" step="0.01" min="0.01">
+            </div>
+        </div>
+
+        <div class="trading-info">
+            <div class="balance-info">
+                <div>Total Balance: <span id="balance-display">$10,000.00</span></div>
+                <div>Available: <span id="available-balance-display">$10,000.00</span></div>
+            </div>
+            <div id="current-position" class="position-display">
+                No active position
+            </div>
+        </div>
+
+        <div id="trading-chart" class="trading-chart-container">
+            <!-- Chart will be rendered here -->
+        </div>
+
+        <div class="order-history">
+            <h3>Order History</h3>
+            <div id="order-history-container">
+                No orders yet
+            </div>
+        </div>
+
+        <div class="trading-actions">
+            <button id="back-from-trading" class="btn-secondary">Back to Home</button>
+            <button id="connect-psychology" class="btn-primary">Connect Psychology Analytics</button>
         </div>
     </div>
 </section>

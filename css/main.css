@@ -704,3 +704,127 @@ body {
 .modal-close:hover {
     color: var(--text-primary);
 }
+/* Trading Interface Styles */
+.trading-card {
+    max-width: 1400px;
+}
+
+.trading-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.trading-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.trading-controls .form-control {
+    width: auto;
+    min-width: 120px;
+}
+
+.trading-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+}
+
+.balance-info {
+    font-weight: 600;
+}
+
+.position-display {
+    font-size: 0.9rem;
+}
+
+.trading-chart-container {
+    height: 500px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin: 1rem 0;
+    background: var(--background-color);
+}
+
+.order-history {
+    margin: 2rem 0;
+}
+
+.order-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.order-header {
+    font-weight: 600;
+    background: var(--surface-color);
+}
+
+.text-profit {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.text-loss {
+    color: var(--error-color);
+    font-weight: 600;
+}
+
+.btn-error {
+    background: var(--error-color);
+    color: white;
+}
+
+.btn-error:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+.trading-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+/* Responsive Trading */
+@media (max-width: 768px) {
+    .trading-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .trading-controls {
+        justify-content: center;
+    }
+    
+    .trading-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .trading-chart-container {
+        height: 300px;
+    }
+    
+    .order-item {
+        grid-template-columns: 1fr 1fr;
+        font-size: 0.8rem;
+    }
+    
+    .trading-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}

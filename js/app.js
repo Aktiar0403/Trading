@@ -5,9 +5,11 @@ import { ThemeManager } from './ui/theme-manager.js';
 import { StorageManager } from './data/storage.js';
 import { LiveTradingMonitor } from './trading/live-monitor.js';
 import { ChartManager } from './ui/chart-manager.js';
+import { TradingInterface } from './trading/trading-interface.js';
 class TradingPsychologyApp {
  constructor() {
     this.currentScreen = 'welcome';
+    this.tradingInterface = null;
     this.assessmentEngine = null;
     this.progressBar = null;
     this.themeManager = null;
@@ -70,6 +72,13 @@ class TradingPsychologyApp {
         // Dashboard Screen Elements
         this.historyContainer = document.getElementById('history-container');
         this.backToWelcomeButton = document.getElementById('back-to-welcome');
+         // Trading Screen Elements
+    this.tradingScreen = document.getElementById('trading-screen');
+    this.backFromTradingBtn = document.getElementById('back-from-trading');
+    this.connectPsychologyBtn = document.getElementById('connect-psychology');
+    
+    // Add to screens object
+    this.screens.trading = this.tradingScreen;
 
         // Analytics Screen Elements
         this.startMonitorBtn = document.getElementById('start-monitor-btn');
@@ -154,7 +163,13 @@ class TradingPsychologyApp {
         if (this.backToWelcomeButton) {
             this.backToWelcomeButton.addEventListener('click', () => this.showScreen('welcome'));
         }
-
+        if (this.backFromTradingBtn) {
+        this.backFromTradingBtn.addEventListener('click', () => this.showScreen('welcome'));
+    }
+    
+    if (this.connectPsychologyBtn) {
+        this.connectPsychologyBtn.addEventListener('click', () => this.showAnalytics());
+    }
         // Analytics Screen Events
         if (this.startMonitorBtn) {
             this.startMonitorBtn.addEventListener('click', () => this.startPsychologyMonitoring());
@@ -228,7 +243,13 @@ document.addEventListener('psychologyAlert', (e) => {
             }
         });
     }
-
+showTrading() {
+    if (!this.tradingInterface) {
+        this.tradingInterface = new TradingInterface();
+        this.tradingInterface.initialize('trading-chart');
+    }
+    this.showScreen('trading');
+}
     // Assessment Methods
     startAssessment(assessmentType) {
         try {
