@@ -1,3 +1,5 @@
+// Remove the import since TradingChart is now global
+
 export class TradingInterface {
     constructor() {
         this.tradingChart = null;
@@ -8,9 +10,35 @@ export class TradingInterface {
     }
 
     initialize(containerId) {
-        this.tradingChart = new TradingChart(containerId);
-        this.setupTradingControls();
-        this.updateBalanceDisplay();
+        // Check if TradingChart class is available
+        if (typeof TradingChart === 'undefined') {
+            console.error('TradingChart class not found. Make sure trading-chart.js is loaded.');
+            this.showChartError();
+            return;
+        }
+
+        try {
+            this.tradingChart = new TradingChart(containerId);
+            this.setupTradingControls();
+            this.updateBalanceDisplay();
+            console.log('Trading interface initialized successfully');
+        } catch (error) {
+            console.error('Error initializing trading interface:', error);
+            this.showChartError();
+        }
+    }
+
+    showChartError() {
+        const container = document.getElementById('trading-chart');
+        if (container) {
+            container.innerHTML = `
+                <div style="padding: 2rem; text-align: center; color: var(--error-color);">
+                    <h3>Chart Loading Error</h3>
+                    <p>Unable to load trading charts. Please refresh the page.</p>
+                    <button class="btn-primary" onclick="location.reload()">Reload Page</button>
+                </div>
+            `;
+        }
     }
 
     setupTradingControls() {
@@ -40,13 +68,30 @@ export class TradingInterface {
                 this.changeTimeframe(e.target.value);
             });
         }
+
+        // Initialize quantity input
+        if (quantityInput) {
+            quantityInput.addEventListener('input', () => {
+                this.validateQuantity();
+            });
+        }
+    }
+
+    validateQuantity() {
+        const quantityInput = document.getElementById('quantity-input');
+        if (quantityInput) {
+            const value = parseFloat(quantityInput.value);
+            if (value <= 0 || isNaN(value)) {
+                quantityInput.value = '0.1';
+            }
+        }
     }
 
     placeOrder(type) {
         const quantityInput = document.getElementById('quantity-input');
         const quantity = quantityInput ? parseFloat(quantityInput.value) : 0.1;
         
-        if (quantity <= 0) {
+        if (quantity <= 0 || isNaN(quantity)) {
             alert('Please enter a valid quantity');
             return;
         }
@@ -69,7 +114,7 @@ export class TradingInterface {
         const order = {
             id: Date.now().toString(),
             type: type,
-            symbol: this.tradingChart.currentSymbol,
+            symbol: this.tradingChart ? this.tradingChart.currentSymbol : 'BTC/USD',
             quantity: quantity,
             price: currentPrice,
             timestamp: new Date(),
@@ -100,14 +145,17 @@ export class TradingInterface {
         this.orderHistory.push(order);
         this.updateBalanceDisplay();
         this.updatePositionDisplay();
+        this.updateOrderHistory();
         
-        // Add marker to chart
-        this.tradingChart.addTradeMarker(
-            Math.floor(order.timestamp.getTime() / 1000),
-            order.price,
-            order.type,
-            order.quantity
-        );
+        // Add marker to chart if chart is available
+        if (this.tradingChart) {
+            this.tradingChart.addTradeMarker(
+                Math.floor(order.timestamp.getTime() / 1000),
+                order.price,
+                order.type,
+                order.quantity
+            );
+        }
 
         console.log('Order executed:', order);
     }
@@ -167,6 +215,45 @@ export class TradingInterface {
         } else {
             positionElement.innerHTML = '<div>No active position</div>';
         }
+    }
+
+    updateOrderHistory() {
+        const historyContainer = document.getElementById('order-history-container');
+        if (!historyContainer) return;
+
+        if (this.orderHistory.length === 0) {
+            historyContainer.innerHTML = '<div>No orders yet</div>';
+            return;
+        }
+
+        let html = `
+            <div class="order-header order-item">
+                <div>Time</div>
+                <div>Type</div>
+                <div>Price</div>
+                <div>P&L</div>
+            </div>
+        `;
+
+        // Show last 10 orders
+        const recentOrders = this.orderHistory.slice(-10).reverse();
+        
+        recentOrders.forEach(order => {
+            const time = order.timestamp.toLocaleTimeString();
+            const pnl = order.profitLoss ? `$${order.profitLoss.toFixed(2)}` : '-';
+            const pnlClass = order.profitLoss > 0 ? 'text-profit' : order.profitLoss < 0 ? 'text-loss' : '';
+            
+            html += `
+                <div class="order-item">
+                    <div>${time}</div>
+                    <div class="${order.type === 'buy' ? 'text-profit' : 'text-loss'}">${order.type.toUpperCase()}</div>
+                    <div>$${order.price.toFixed(2)}</div>
+                    <div class="${pnlClass}">${pnl}</div>
+                </div>
+            `;
+        });
+
+        historyContainer.innerHTML = html;
     }
 
     getOrderHistory() {

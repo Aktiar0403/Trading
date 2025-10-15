@@ -1,4 +1,7 @@
-export class TradingChart {
+// Remove the export if using global LightweightCharts
+// Since we're loading LightweightCharts via CDN, we don't need to export
+
+class TradingChart {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         this.chart = null;
@@ -6,7 +9,11 @@ export class TradingChart {
         this.volumeSeries = null;
         this.currentSymbol = 'BTC/USD';
         this.timeframe = '1h';
-        this.isConnected = false;
+        
+        if (typeof LightweightCharts === 'undefined') {
+            console.error('LightweightCharts library not loaded. Make sure the script is included in HTML.');
+            return;
+        }
         
         this.initializeChart();
     }
@@ -163,4 +170,12 @@ export class TradingChart {
             this.chart = null;
         }
     }
+}
+
+// Export for ES6 modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { TradingChart };
+} else {
+    // Make it available globally for the trading interface
+    window.TradingChart = TradingChart;
 }

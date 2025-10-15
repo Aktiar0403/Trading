@@ -133,17 +133,28 @@
     </div>
 
     <!-- JavaScript Files -->
-    <script type="module" src="js/utils/constants.js"></script>
-    <script type="module" src="js/utils/helpers.js"></script>
-    <script type="module" src="js/data/storage.js"></script>
-    <script type="module" src="js/assessment/questions.js"></script>
-    <script type="module" src="js/assessment/scoring.js"></script>
-    <script type="module" src="js/ui/progress-bar.js"></script>
-    <script type="module" src="js/ui/results-renderer.js"></script>
-    <script type="module" src="js/ui/theme-manager.js"></script>
-    <script type="module" src="js/assessment/assessment-engine.js"></script>
-    <script type="module" src="js/app.js"></script>
+<!-- Load LightweightCharts first -->
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 
+<!-- Then load your modules -->
+<script type="module" src="js/utils/constants.js"></script>
+<script type="module" src="js/utils/helpers.js"></script>
+<script type="module" src="js/data/storage.js"></script>
+<script type="module" src="js/assessment/questions.js"></script>
+<script type="module" src="js/assessment/scoring.js"></script>
+<script type="module" src="js/ui/progress-bar.js"></script>
+<script type="module" src="js/ui/results-renderer.js"></script>
+<script type="module" src="js/ui/theme-manager.js"></script>
+<script type="module" src="js/ui/chart-manager.js"></script>
+<script type="module" src="js/assessment/assessment-engine.js"></script>
+
+<!-- Load trading-chart as regular script (not module) -->
+<script src="js/trading/trading-chart.js"></script>
+
+<!-- Then load trading-interface as module -->
+<script type="module" src="js/trading/trading-interface.js"></script>
+<script type="module" src="js/trading/live-monitor.js"></script>
+<script type="module" src="js/app.js"></script>
     <!-- Analytics Screen -->
 <section id="analytics-screen" class="screen">
     <div class="card analytics-card">
