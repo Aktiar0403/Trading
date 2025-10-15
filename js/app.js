@@ -470,11 +470,17 @@ stopPsychologyMonitoring() {
         // Stop metrics update
         this.stopMetricsUpdate();
 
+        // Destroy charts to clean up
+        if (this.chartManager) {
+            this.chartManager.destroyAllCharts();
+        }
+
         // Generate and show session report
         const report = this.liveMonitor.generateSessionReport();
         this.showSessionReport(report);
 
         this.showSuccess('Psychology monitoring stopped. Session report generated.');
+        console.log('Psychology monitoring stopped');
     } catch (error) {
         console.error('Error stopping psychology monitoring:', error);
         this.showError('Error stopping psychology monitoring.');
@@ -667,18 +673,28 @@ capitalizeFirstLetter(string) {
         }
     }
 
-    initializeCharts() {
-        if (!this.chartManager) return;
-
-        try {
-            this.chartManager.createMindsetChart('mindset-chart');
-            this.chartManager.createEmotionRadarChart('radar-chart');
-            this.chartManager.createPsychologyBreakdownChart('breakdown-chart');
-            this.chartManager.createPerformanceCorrelationChart('correlation-chart');
-        } catch (error) {
-            console.error('Error initializing charts:', error);
-        }
+   initializeCharts() {
+    if (!this.chartManager) {
+        console.error('Chart manager not initialized');
+        return;
     }
+
+    try {
+        // Destroy any existing charts first
+        this.chartManager.destroyAllCharts();
+        
+        // Create new charts
+        this.chartManager.createMindsetChart('mindset-chart');
+        this.chartManager.createEmotionRadarChart('radar-chart');
+        this.chartManager.createPsychologyBreakdownChart('breakdown-chart');
+        this.chartManager.createPerformanceCorrelationChart('correlation-chart');
+        
+        console.log('All charts initialized successfully');
+    } catch (error) {
+        console.error('Error initializing charts:', error);
+        this.showError('Error initializing charts. Please refresh the page.');
+    }
+}
 
     startMetricsUpdate() {
         this.metricsInterval = setInterval(() => {
@@ -989,38 +1005,50 @@ capitalizeFirstLetter(string) {
         this.showModal('Session Report', reportHtml);
     }
 
-    // Utility Methods
-    showScreen(screenName) {
-        // Hide all screens
-        Object.values(this.screens).forEach(screen => {
-            if (screen) {
-                screen.classList.remove('active');
-            }
-        });
+    // Add this method to properly clean up when leaving analytics screen
+cleanupAnalytics() {
+    if (this.liveMonitor && this.liveMonitor.isMonitoring) {
+        this.stopPsychologyMonitoring();
+    }
+    
+    if (this.chartManager) {
+        this.chartManager.destroyAllCharts();
+    }
+    
+    this.stopMetricsUpdate();
+}
 
-        // Show target screen
-        if (this.screens[screenName]) {
-            this.screens[screenName].classList.add('active');
-            this.currentScreen = screenName;
+    // Utility Methods
+   showScreen(screenName) {
+    // Clean up analytics if leaving analytics screen
+    if (this.currentScreen === 'analytics' && screenName !== 'analytics') {
+        this.cleanupAnalytics();
+    }
+
+    // Hide all screens
+    Object.values(this.screens).forEach(screen => {
+        if (screen) {
+            screen.classList.remove('active');
         }
-if (screenName === 'dashboard') {
+    });
+
+    // Show target screen
+    if (this.screens[screenName]) {
+        this.screens[screenName].classList.add('active');
+        this.currentScreen = screenName;
+    }
+
+    // Screen-specific initialization
+    if (screenName === 'dashboard') {
         this.loadAssessmentHistory();
     } else if (screenName === 'analytics') {
         this.alertsContainer.innerHTML = '';
         this.sessionMetrics.innerHTML = '<p>Start monitoring to see live metrics...</p>';
     }
-        // Screen-specific initialization
-        if (screenName === 'dashboard') {
-            this.loadAssessmentHistory();
-        } else if (screenName === 'analytics') {
-            this.alertsContainer.innerHTML = '';
-            this.sessionMetrics.innerHTML = '<p>Start monitoring to see live metrics...</p>';
-        }
 
-        // Update document title
-        document.title = this.getScreenTitle(screenName) + ' - Trading Psychology Assessment';
-
-    }
+    // Update document title
+    document.title = this.getScreenTitle(screenName) + ' - Trading Psychology Assessment';
+}
 
     showAnalytics() {
         this.showScreen('analytics');

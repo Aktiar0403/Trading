@@ -2,22 +2,11 @@ import { StorageManager } from '../data/storage.js';
 
 export class ThemeManager {
     constructor() {
-        this.themeStylesheet = document.getElementById('theme-stylesheet');
         this.themeToggleBtn = document.getElementById('theme-toggle-btn');
         this.currentTheme = StorageManager.getTheme();
         
-        // Fallback if stylesheet element is not found
-        if (!this.themeStylesheet) {
-            console.warn('Theme stylesheet element not found, creating fallback');
-            this.createFallbackStylesheet();
-        }
-    }
-
-    createFallbackStylesheet() {
-        // Create a style element for theme management
-        this.themeStylesheet = document.createElement('style');
-        this.themeStylesheet.id = 'theme-stylesheet';
-        document.head.appendChild(this.themeStylesheet);
+        // No need for stylesheet element anymore since we're using data-theme
+        console.log('Theme manager initialized with theme:', this.currentTheme);
     }
 
     init() {
@@ -43,7 +32,7 @@ export class ThemeManager {
     }
 
     applyTheme(theme) {
-        // Use data-theme attribute on html element instead of switching stylesheets
+        // Use data-theme attribute on html element
         document.documentElement.setAttribute('data-theme', theme);
         this.updateToggleButton();
     }

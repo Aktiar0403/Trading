@@ -18,6 +18,9 @@ export class ChartManager {
             return null;
         }
 
+        // Destroy existing chart if it exists
+        this.destroyChart(canvasId);
+
         const chart = new Chart(ctx, {
             type: type,
             data: {
@@ -93,6 +96,9 @@ export class ChartManager {
         const ctx = document.getElementById(canvasId);
         if (!ctx) return null;
 
+        // Destroy existing chart if it exists
+        this.destroyChart(canvasId);
+
         const chart = new Chart(ctx, {
             type: 'radar',
             data: {
@@ -130,6 +136,9 @@ export class ChartManager {
     createPsychologyBreakdownChart(canvasId) {
         const ctx = document.getElementById(canvasId);
         if (!ctx) return null;
+
+        // Destroy existing chart if it exists
+        this.destroyChart(canvasId);
 
         const chart = new Chart(ctx, {
             type: 'doughnut',
@@ -171,6 +180,9 @@ export class ChartManager {
     createPerformanceCorrelationChart(canvasId) {
         const ctx = document.getElementById(canvasId);
         if (!ctx) return null;
+
+        // Destroy existing chart if it exists
+        this.destroyChart(canvasId);
 
         const chart = new Chart(ctx, {
             type: 'scatter',
@@ -259,7 +271,7 @@ export class ChartManager {
 
     addTradeMarker(timestamp, tradeType, outcome) {
         this.charts.forEach((chart, canvasId) => {
-            if (chart.options.plugins.annotation) {
+            if (chart.options.plugins?.annotation) {
                 // Add annotation for trade entry/exit
                 const annotation = {
                     type: 'line',
@@ -297,5 +309,15 @@ export class ChartManager {
             chart.destroy();
         });
         this.charts.clear();
+    }
+
+    // New method to check if chart exists
+    hasChart(canvasId) {
+        return this.charts.has(canvasId);
+    }
+
+    // New method to get existing chart
+    getChart(canvasId) {
+        return this.charts.get(canvasId);
     }
 }

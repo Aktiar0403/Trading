@@ -287,5 +287,13 @@ export class LiveTradingMonitor {
 
     getSessionHistory() {
         return JSON.parse(localStorage.getItem('tradingSessions') || '[]');
+    
     }
+    // ADD THIS METHOD TO THE LiveTradingMonitor CLASS:
+
+cleanup() {
+    this.stopMonitoring();
+    this.psychologyData = [];
+    this.currentSession = null;
+}
 }
